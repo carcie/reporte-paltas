@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte Cosecha de Paltas | Auditoría 2026</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        paper: {
+                            50: '#fdfbf7',
+                            100: '#f7f4ed',
+                            200: '#eee8dc',
+                            300: '#e1d7c4',
+                        },
+                        earth: {
+                            900: '#1a1c18',
+                            800: '#2c3127',
+                            700: '#3f4738',
+                            600: '#55604c',
+                            500: '#6d7b62',
+                        },
+                        terracotta: {
+                            600: '#a34828',
+                            500: '#c25832',
+                            100: '#fbeee9',
+                        },
+                        harvest: {
+                            900: '#12261b',
+                            800: '#1b3a29',
+                            700: '#28523b',
+                            100: '#e8f2ec',
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['Instrument Serif', 'serif'],
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- External Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            background-color: #fdfbf7;
+            color: #1a1c18;
+            font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+        }
+
+        /* Subtle tactile rule lines */
+        .border-hairline {
+            border-color: rgba(26, 28, 24, 0.12);
+        }
+
+        .bg-pattern-dots {
+            background-image: radial-gradient(rgba(26, 28, 24, 0.08) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        /* Minimalist Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #fdfbf7;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #c2c6be;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #28523b;
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white !important; color: black !important; }
+            .print-border { border: 1px solid #ddd !important; }
+        }
+    </style>
+</head>
+<body class="font-sans antialiased min-h-screen flex flex-col justify-between selection:bg-harvest-800 selection:text-white">
+
+    <!-- Minimalist Sticky Header -->
+    <header class="sticky top-0 z-40 bg-paper-50/90 backdrop-blur-md border-b border-hairline px-6 py-4 no-print">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <span class="text-xs font-mono tracking-widest uppercase px-2 py-1 bg-harvest-900 text-paper-50 font-medium">
+                    AUDIT #2026-0828
+                </span>
+                <span class="text-xs font-mono text-earth-600 hidden sm:inline">
+                    Avocado Farming Co. &bull; Fundo El Nogal
+                </span>
+            </div>
+
+            <nav class="hidden md:flex items-center gap-8 text-xs font-mono uppercase tracking-wider text-earth-700">
+                <a href="#summary" class="hover:text-harvest-800 transition-colors">Resumen</a>
+                <a href="#columns" class="hover:text-harvest-800 transition-colors">Pesaje</a>
+                <a href="#bins" class="hover:text-harvest-800 transition-colors">Inventario</a>
+                <a href="#yoy" class="hover:text-harvest-800 transition-colors">Análisis YoY</a>
+            </nav>
+
+            <button onclick="window.print()" class="text-xs font-mono font-semibold text-earth-900 hover:text-harvest-700 border border-earth-900 hover:border-harvest-700 px-3 py-1.5 transition-all flex items-center gap-2">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                Imprimir Documento
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-6 py-12 w-full space-y-20">
+
+        <!-- ACT 1: EDITORIAL HERO & KEY METRICS -->
+        <section id="summary" class="pt-4">
+            <div class="border-b border-earth-900 pb-8 mb-12">
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-6">
+                    <div>
+                        <p class="text-xs font-mono uppercase tracking-widest text-terracotta-600 font-semibold mb-2">
+                            &mdash; INFORME OFICIAL DE TERRENO Y BODEGA
+                        </p>
+                        <h1 class="font-serif text-5xl sm:text-7xl font-normal text-earth-900 tracking-tight leading-none">
+                            Auditoría de Cosecha <br/>
+                            <span class="italic font-light text-harvest-800">Palta Hass 2026</span>
+                        </h1>
+                    </div>
+                    <div class="text-left md:text-right font-mono text-xs text-earth-600 space-y-1">
+                        <p><strong class="text-earth-900">FECHA:</strong> 28 de Agosto, 2026</p>
+                        <p><strong class="text-earth-900">LOTE:</strong> Cuarteles 04 - 09</p>
+                        <p><strong class="text-earth-900">ESTADO:</strong> <span class="text-harvest-700 font-semibold">&check; AUDITADO OK</span></p>
+                    </div>
+                </div>
+                <p class="text-earth-700 max-w-2xl text-base leading-relaxed font-light">
+                    Consolidación de recepción de fruta fresca, cubicación por filas de apilamiento, balance de pesaje bruto/neto y verificación física del lote completo de 37 contenedores industriales.
+                </p>
+            </div>
+
+            <!-- Clean Minimalist Key Indicators Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="bg-white p-6 border border-hairline relative">
+                    <span class="text-[10px] font-mono uppercase text-earth-600 block mb-3">01. Fruta Neta Total</span>
+                    <div class="text-4xl sm:text-5xl font-serif text-earth-900 tracking-tight">
+                        14.895 <span class="text-base font-sans font-normal text-earth-600">kg</span>
+                    </div>
+                    <span class="text-[11px] text-harvest-700 font-mono mt-3 block">&check; 100% Pesado en báscula</span>
+                </div>
+
+                <div class="bg-white p-6 border border-hairline relative">
+                    <span class="text-[10px] font-mono uppercase text-earth-600 block mb-3">02. Unidades Bins</span>
+                    <div class="text-4xl sm:text-5xl font-serif text-earth-900 tracking-tight">
+                        37 <span class="text-base font-sans font-normal text-earth-600">unid.</span>
+                    </div>
+                    <span class="text-[11px] text-earth-600 font-mono mt-3 block">Bin #001 al #037</span>
+                </div>
+
+                <div class="bg-white p-6 border border-hairline relative">
+                    <span class="text-[10px] font-mono uppercase text-earth-600 block mb-3">03. Carga Promedio</span>
+                    <div class="text-4xl sm:text-5xl font-serif text-harvest-800 tracking-tight">
+                        402,5 <span class="text-base font-sans font-normal text-earth-600">kg/bin</span>
+                    </div>
+                    <span class="text-[11px] text-terracotta-600 font-mono mt-3 block">+0.6% sobre target</span>
+                </div>
+
+                <div class="bg-white p-6 border border-hairline relative">
+                    <span class="text-[10px] font-mono uppercase text-earth-600 block mb-3">04. Tara Plastica</span>
+                    <div class="text-4xl sm:text-5xl font-serif text-earth-900 tracking-tight">
+                        1.480 <span class="text-base font-sans font-normal text-earth-600">kg</span>
+                    </div>
+                    <span class="text-[11px] text-earth-600 font-mono mt-3 block">Estándar: 40 kg/bin</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACT 2: ARCHITECTURAL PROCESS FLOW -->
+        <section class="space-y-6">
+            <div class="flex items-center justify-between border-b border-hairline pb-3">
+                <h2 class="font-serif text-2xl text-earth-900">Cadena de Custodia & Manejo en Campo</h2>
+                <span class="text-xs font-mono text-earth-600">SECUENCIA OPERATIVA</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-px bg-earth-900/10 border border-hairline">
+                <div class="bg-paper-50 p-5 flex flex-col justify-between space-y-4">
+                    <div>
+                        <span class="text-[10px] font-mono text-terracotta-600 font-semibold block mb-1">FASE 01</span>
+                        <h3 class="font-semibold text-earth-900 text-sm">Corte en Huerto</h3>
+                        <p class="text-xs text-earth-600 mt-2 leading-relaxed">Cosecha manual con tijera, pedúnculo estándar. Llenado directo en bins.</p>
+                    </div>
+                    <span class="text-[10px] font-mono text-earth-500 pt-2 border-t border-hairline">Rendimiento: 100%</span>
+                </div>
+
+                <div class="bg-paper-50 p-5 flex flex-col justify-between space-y-4">
+                    <div>
+                        <span class="text-[10px] font-mono text-terracotta-600 font-semibold block mb-1">FASE 02</span>
+                        <h3 class="font-semibold text-earth-900 text-sm">Tránsito Tractor</h3>
+                        <p class="text-xs text-earth-600 mt-2 leading-relaxed">Traslado continuo hileras &rarr; acopio. Trenes de 4 bins por viaje.</p>
+                    </div>
+                    <span class="text-[10px] font-mono text-earth-500 pt-2 border-t border-hairline">Velocidad &lt; 15 km/h</span>
+                </div>
+
+                <div class="bg-paper-50 p-5 flex flex-col justify-between space-y-4">
+                    <div>
+                        <span class="text-[10px] font-mono text-terracotta-600 font-semibold block mb-1">FASE 03</span>
+                        <h3 class="font-semibold text-earth-900 text-sm">Apilado Pilas</h3>
+                        <p class="text-xs text-earth-600 mt-2 leading-relaxed">Control visual de descarte y consolidación en columnas verticales de 3 bins.</p>
+                    </div>
+                    <span class="text-[10px] font-mono text-earth-500 pt-2 border-t border-hairline">Máx 3 de altura</span>
+                </div>
+
+                <div class="bg-paper-50 p-5 flex flex-col justify-between space-y-4">
+                    <div>
+                        <span class="text-[10px] font-mono text-terracotta-600 font-semibold block mb-1">FASE 04</span>
+                        <h3 class="font-semibold text-earth-900 text-sm">Pesaje Báscula</h3>
+                        <p class="text-xs text-earth-600 mt-2 leading-relaxed">Pesaje por grúa/plataforma. Registro bruto y descuento de tara fija.</p>
+                    </div>
+                    <span class="text-[10px] font-mono text-earth-500 pt-2 border-t border-hairline">Precisión ±0.5 kg</span>
+                </div>
+
+                <div class="bg-paper-50 p-5 flex flex-col justify-between space-y-4">
+                    <div>
+                        <span class="text-[10px] font-mono text-terracotta-600 font-semibold block mb-1">FASE 05</span>
+                        <h3 class="font-semibold text-earth-900 text-sm">Bodega & Carga</h3>
+                        <p class="text-xs text-earth-600 mt-2 leading-relaxed">Sombra preventiva y despacho en transporte refrigerado a planta.</p>
+                    </div>
+                    <span class="text-[10px] font-mono text-harvest-700 font-medium pt-2 border-t border-hairline">Temp &lt; 10°C</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ACT 3: WEIGHING TABLE & CHART -->
+        <section id="columns" class="space-y-8">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-hairline pb-3">
+                <div>
+                    <h2 class="font-serif text-3xl text-earth-900">Detalle de Pesaje por Columna</h2>
+                    <p class="text-xs font-mono text-earth-600 mt-1">11 FILAS DE 3 BINS + 2 FILAS PARCIALES DE REMATE</p>
+                </div>
+                <div class="text-xs font-mono text-earth-600">
+                    FÓRMULA: <span class="bg-paper-200 px-2 py-1 text-earth-900">PESO NETO = BRUTO - (CANT. BINS &times; 40 KG)</span>
+                </div>
+            </div>
+
+            <!-- Visual Chart & Insights Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Clean Bar Chart -->
+                <div class="lg:col-span-2 bg-white p-6 border border-hairline space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-mono text-earth-900 uppercase font-semibold">Distribución de Peso Neto (kg) por Fila</span>
+                        <span class="text-xs font-mono text-earth-500">13 Pesadas Auditadas</span>
+                    </div>
+                    <div class="h-64 w-full">
+                        <canvas id="cleanChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Editorial Note Callout -->
+                <div class="bg-paper-100 p-6 border border-hairline flex flex-col justify-between space-y-6">
+                    <div>
+                        <span class="text-xs font-mono text-terracotta-600 font-semibold block mb-2 uppercase tracking-wider">&bull; Hallazgos Clave</span>
+                        <h3 class="font-serif text-xl text-earth-900 mb-3">Uniformidad de Carga</h3>
+                        <p class="text-xs text-earth-700 leading-relaxed space-y-2">
+                            Las filas completas (01 a 11) presentaron una variabilidad inferior al 4.3%, lo que demuestra excelente consistencia en el llenado por parte de la cuadrilla.
+                        </p>
+                    </div>
+                    
+                    <div class="p-4 bg-white border border-hairline text-xs font-mono space-y-2">
+                        <p class="text-earth-900 font-semibold">Pila Máxima (Columna 06):</p>
+                        <p class="text-harvest-700 font-bold text-sm">1.261,0 kg Netos</p>
+                        <p class="text-[10px] text-earth-500">3 Bins / Bruto: 1.381,0 kg</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="bg-white border border-hairline overflow-x-auto">
+                <table class="w-full text-left text-xs font-mono">
+                    <thead class="bg-paper-100 text-earth-900 border-b border-hairline uppercase text-[10px] tracking-wider">
+                        <tr>
+                            <th class="py-3 px-4">Columna ID</th>
+                            <th class="py-3 px-4">Cant. Bins</th>
+                            <th class="py-3 px-4 text-right">Peso Bruto (kg)</th>
+                            <th class="py-3 px-4 text-right">Tara (kg)</th>
+                            <th class="py-3 px-4 text-right text-earth-900 font-bold">Peso Neto Fruta (kg)</th>
+                            <th class="py-3 px-4">Observaciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-hairline text-earth-800">
+                        <tr class="hover:bg-paper-50 transition-colors">
+                            <td class="py-3 px-4 font-bold">Columna 01</td>
+                            <td class="py-3 px-4">3 Bins</td>
+                            <td class="py-3 px-4 text-right">1.334,5</td>
+                            <td class="py-3 px-4 text-right text-earth-500">-120,0</td>
+                            <td class="py-3 px-4 text-right font-bold text-harvest-800">1.214,5</td>
+                            <td class="py-3 px-4 text-earth-600">Estándar completo</td>
+                        </tr>
+                        <tr class="hover:bg-paper-50 transition-colors">
+                            <td class="py-3 px-4 font-bold">Columna 02</td>
+                            <td class="py-3 px-4">3 Bins</td>
+                            <td class="py-3 px-4 text-right">1.359,0</td>
+                            <td class="py-3 px-4 text-right text-earth-500">-120,0</td>
+                            <td class="py-3 px-4 text-right font-bold text-harvest-800">1.239,0</td>
+                            <td class="py-3 px-4 text-earth-600">Estándar completo</td>
+                        </tr>
+                        <tr class="hover:bg-paper-50 transition-colors">
+                            <td class="py-3 px-4 font-bold">Columna 03</td>
+                            <td class="py-3 px-4">3 Bins</td>
+                            <td class="py-3 px-4 text-right">1.326,0</td>
+                            <td class="py-3 px-4 text-right text-earth-500">-120,0</td>
+                            <td class="py-3 px-4 text-right font-bold text-harvest-800">1.206,0</td>
+                            <td class="py-3 px-4 text-earth-600">Estándar completo</td>
+                        </tr>
+                        <tr class="hover:bg-paper-50 transition-colors">
+                            <td class="py-3 px-4 font-bold">Columna 04</td>
+                            <td class="py-3 px-4">3 Bins</td>
+                            <td class="py-3 px-4 text-right">1.334,0</td>
+                            <td class="py-3 px-4 text-right text-earth-500">-120,0</td>
+                            <td class="py-3 px-4 text-right font-bold text-harvest-800">1.214,0</td>
+                            <td class="py-3 px-4 text-earth-600">Estándar completo</td>
+                        </tr>
+                        <tr class="hover:bg-paper-50 transition-colors">
+                            <td class="py-3 px-4 font-bold">Columna 05</td>
+                            <td class="py-3 px-4">3 Bins</td>
+                            <td class="py-3 px-4 text-right">1.336,5</td>
+                            <td class="py-3 px-4 text-right text-earth-500">-120,0</td>
+                            <td class="py-3 px-4 text-right font-bold text-harvest-800">1.216,5</td>
+                            <td class="py-3 px-4 text-earth-600">Estándar completo</td>
+                        </tr>
+                        <tr class="bg-paper-100/70 hover:bg-paper-100 transition-colors">
+                            <td class="py-3 px-4 font-bold text-terracotta-600">Columna 06</td>
+                            <td class="py-3 px-4">3 Bins</td>
+                            <td class="py-3 px-4 text-right font-bold">1.381,0</td>
+                            <td class="py-3 px-4 text-right text-earth-500">-120,0</td>
+                            <td class="py-3 px-4 text-right font-bold text-terracotta-600">1.261,0</td>
+                            <td class="py-3 px-4 font-semibold text-terracotta-600">&star; Pico de Densidad</td>
+                        </tr>
+                        <tr class="hover:bg-paper-50 transition-colors">
+                            <td class="py-3 px-4 font-bold">Columna 07</td>
+                            <td class="py-3 px-4">3 Bins</td>
+                            <td class="py-3 px-4 text-right">1.356,0</td>
+                            <td class="py-3 px-4 text-right text-earth-500">-120,0</td>
+                            <td class="py-3 px-4 text-right font-bold text-harvest-800">1.236,0</td>
+                            <td class="py-3 px-4 text-earth-600">Estándar completo</td>
+                        </tr>
+                        <tr class="hover:bg-paper-50 transition-colors">
+                            <td class="py-3 px-4 font-bold">Columna 08</td>
+                            <td class="py-3 px-4">3 Bins</td>
+                            <td class="py-3 px-4 text-right">1.326,0</td>
+                            <td class="py-3 px-4 text-right text-earth-500">-120,0</td>
+                            <td class="py-3 px-4 text-right font-bold text-harvest-800">1.206,0</td>
+                            <td class="py-3 px-4 text-earth-600">Estándar completo</td>
+                        </tr>
+                        <tr class="hover:bg-paper-50 transition-colors">
+                            <td class="py-3 px-4 font-bold">Columna 09</td>
+                            <td class="py-3 px-4">3 Bins</td>
+                            <td class="py-3 px-4 text-right">1.353,0</td>
+                            <td class="py-3 px-4 text-right text-earth-500">-120,0</td>
+                            <td class="py-3 px-4 text-right font-bold text-harvest-800">1.233,0</td>
+                            <td class="py-3 px-4 text-earth-600">Estándar completo</td>
+                        </tr>
+                        <tr class="hover:bg-paper-50 transition-colors">
+                            <td class="py-3 px-4 font-bold">Columna 10</td>
+                            <td class="py-3 px-4">3 Bins</td>
+                            <td class="py-3 px-4 text-right">1.369,5</td>
+                            <td class="py-3 px-4 text-right text-earth-500">-120,0</td>
+                            <td class="py-3 px-4 text-right font-bold text-harvest-800">1.249,5</td>
+                            <td class="py-3 px-4 text-earth-600">Estándar completo</td>
+                        </tr>
+                        <tr class="hover:bg-paper-50 transition-colors">
+                            <td class="py-3 px-4 font-bold">Columna 11</td>
+                            <td class="py-3 px-4">3 Bins</td>
+                            <td class="py-3 px-4 text-right">1.356,0</td>
+                            <td class="py-3 px-4 text-right text-earth-500">-120,0</td>
+                            <td class="py-3 px-4 text-right font-bold text-harvest-800">1.236,0</td>
+                            <td class="py-3 px-4 text-earth-600">Estándar completo</td>
+                        </tr>
+                        <tr class="hover:bg-paper-50 transition-colors">
+                            <td class="py-3 px-4 font-bold">Columna 12</td>
+                            <td class="py-3 px-4 text-terracotta-600 font-bold">2 Bins</td>
+                            <td class="py-3 px-4 text-right">649,5</td>
+                            <td class="py-3 px-4 text-right text-earth-500">-80,0</td>
+                            <td class="py-3 px-4 text-right font-bold text-harvest-800">569,5</td>
+                            <td class="py-3 px-4 text-earth-500 italic">Pila parcial (remate)</td>
+                        </tr>
+                        <tr class="hover:bg-paper-50 transition-colors">
+                            <td class="py-3 px-4 font-bold">Columna 13</td>
+                            <td class="py-3 px-4 text-terracotta-600 font-bold">2 Bins</td>
+                            <td class="py-3 px-4 text-right">894,5</td>
+                            <td class="py-3 px-4 text-right text-earth-500">-80,0</td>
+                            <td class="py-3 px-4 text-right font-bold text-harvest-800">814,5</td>
+                            <td class="py-3 px-4 text-earth-500 italic">Pila parcial (remate)</td>
+                        </tr>
+                    </tbody>
+                    <tfoot class="bg-paper-200 border-t-2 border-earth-900 text-earth-900 font-bold">
+                        <tr>
+                            <td class="py-3.5 px-4 font-serif text-sm">TOTAL AUDITADO</td>
+                            <td class="py-3.5 px-4">37 Bins</td>
+                            <td class="py-3.5 px-4 text-right">16.375,0 kg</td>
+                            <td class="py-3.5 px-4 text-right text-earth-600">-1.480,0 kg</td>
+                            <td class="py-3.5 px-4 text-right text-sm text-harvest-900">14.895,0 kg</td>
+                            <td class="py-3.5 px-4 text-harvest-700">&check; Cuadrante Cerrado</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </section>
+
+        <!-- ACT 4: BIN INVENTORY MATRIX & AUDIT NOTE -->
+        <section id="bins" class="space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-hairline pb-3">
+                <div>
+                    <h2 class="font-serif text-3xl text-earth-900">Matriz de Inventario Individual (Bins 001 - 037)</h2>
+                    <p class="text-xs font-mono text-earth-600 mt-1">VERIFICACIÓN FÍSICA Y CONTROL DE IDENTIFICACIÓN</p>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <input type="text" id="binSearch" placeholder="Buscar ID (ej: 017)..." class="bg-white border border-hairline px-3 py-1.5 text-xs font-mono text-earth-900 focus:outline-none focus:border-earth-900 w-44">
+                    <button onclick="resetSearch()" class="text-xs font-mono text-earth-600 hover:text-earth-900 underline">Limpiar</button>
+                </div>
+            </div>
+
+            <!-- Audit Notice regarding Bin 017 -->
+            <div class="p-5 bg-paper-100 border border-hairline border-l-4 border-l-harvest-800 flex items-start gap-4">
+                <span class="text-xs font-mono font-bold bg-harvest-800 text-paper-50 px-2 py-0.5">NOTA AUDITORÍA</span>
+                <p class="text-xs text-earth-700 leading-relaxed font-sans">
+                    <strong>Aclaración Bin #017:</strong> Identificado e inspeccionado de forma conforme en la segunda fila de acopio. La discrepancia menor detectada en el acta inicial correspondía a una errata de correlativo manuscrito en terreno, subsanada mediante lectura física directa durante el pesaje de la Columna 06.
+                </p>
+            </div>
+
+            <!-- Interactive Grid -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2" id="binGrid">
+                <!-- Javascript will inject clean minimalist cards -->
+            </div>
+        </section>
+
+        <!-- ACT 5: YOY COMPARATIVE & RECOMMENDATIONS -->
+        <section id="yoy" class="space-y-8 pt-6 border-t border-hairline">
+            <div class="border-b border-hairline pb-3">
+                <h2 class="font-serif text-3xl text-earth-900">Análisis Comparativo YoY & Plan de Acción</h2>
+                <p class="text-xs font-mono text-earth-600 mt-1">EVOLUCIÓN INTERANUAL DE EFICIENCIA Y RECOMENDACIONES TÉCNICAS</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- YoY Evolution -->
+                <div class="bg-white p-6 border border-hairline space-y-6">
+                    <div>
+                        <span class="text-[10px] font-mono text-earth-500 uppercase">Evolución Carga Neta Promedio / Bin</span>
+                        <h3 class="font-serif text-2xl text-earth-900 mt-1">Histórico Cosechas (kg/bin)</h3>
+                    </div>
+
+                    <div class="space-y-4 font-mono text-xs">
+                        <div>
+                            <div class="flex justify-between text-earth-600 mb-1">
+                                <span>Temporada 2024</span>
+                                <span>388,2 kg</span>
+                            </div>
+                            <div class="w-full bg-paper-100 h-2">
+                                <div class="bg-earth-500 h-full" style="width: 78%;"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-earth-600 mb-1">
+                                <span>Temporada 2025</span>
+                                <span>395,0 kg</span>
+                            </div>
+                            <div class="w-full bg-paper-100 h-2">
+                                <div class="bg-earth-700 h-full" style="width: 86%;"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between text-harvest-800 font-bold mb-1">
+                                <span>Temporada 2026 (Actual Auditada)</span>
+                                <span>402,5 kg</span>
+                            </div>
+                            <div class="w-full bg-paper-100 h-2">
+                                <div class="bg-harvest-700 h-full" style="width: 96%;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="text-xs text-earth-600 leading-relaxed font-sans border-t border-hairline pt-4">
+                        La tendencia muestra una optimización constante en la densidad de acomodo por bin (+1.9% vs. 2025), reduciendo el costo unitario de transporte interno en tractor.
+                    </p>
+                </div>
+
+                <!-- Action Plan / Recommendations -->
+                <div class="bg-paper-100 p-6 border border-hairline space-y-6">
+                    <div>
+                        <span class="text-[10px] font-mono text-terracotta-600 font-semibold uppercase">Recomendaciones Contratista</span>
+                        <h3 class="font-serif text-2xl text-earth-900 mt-1">Mejoras de Proceso</h3>
+                    </div>
+
+                    <ul class="space-y-4 text-xs text-earth-800 font-sans">
+                        <li class="flex items-start gap-3">
+                            <span class="font-mono text-terracotta-600 font-bold text-sm">01.</span>
+                            <div>
+                                <strong>Etiquetado Permanente QR:</strong> Implementar etiquetas plásticas con QR rígido por bin para automatizar el ingreso en báscula y erradicar omisiones manuales.
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="font-mono text-terracotta-600 font-bold text-sm">02.</span>
+                            <div>
+                                <strong>Planificación de Cierre de Cuartel:</strong> Coordinar los últimos viajes de tractor para consolidar pilas completas de 3 bins y evitar remates parciales innecesarios.
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="font-mono text-terracotta-600 font-bold text-sm">03.</span>
+                            <div>
+                                <strong>Trazabilidad de Bloque:</strong> Vincular cada código de bin al sector exacto del huerto para contrastar kilos por hectárea contra plan nutricional.
+                            </div>
+                        </li>
+                    </ul>
+
+                    <div class="pt-4 border-t border-hairline text-right font-mono text-[10px] text-earth-500 uppercase">
+                        Aprobado por: Dirección de Control Agrícola
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Minimalist Document Footer -->
+    <footer class="border-t border-hairline py-8 px-6 bg-paper-100 mt-20 no-print text-xs font-mono text-earth-600">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+                <strong>AVOCADO FARMING CO.</strong> &bull; Sistema de Gestión de Cosecha &bull; Documento #2026-0828
+            </div>
+            <div>
+                <a href="#summary" class="hover:text-earth-900 underline">Volver al inicio &uarr;</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // 1. Populate 37 Bin Grid
+            const binGrid = document.getElementById('binGrid');
+            if (binGrid) {
+                let html = '';
+                for (let i = 1; i <= 37; i++) {
+                    const binNum = i < 10 ? '00' + i : '0' + i;
+                    const is17 = i === 17;
+                    
+                    html += `
+                        <div class="bin-item bg-white border border-hairline p-2.5 flex flex-col justify-between hover:border-earth-900 transition-colors" data-bin="${binNum}">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-mono font-semibold text-xs text-earth-900">#${binNum}</span>
+                                <span class="w-1.5 h-1.5 rounded-full ${is17 ? 'bg-terracotta-500' : 'bg-harvest-700'}"></span>
+                            </div>
+                            <span class="text-[9px] font-mono text-earth-500">
+                                ${is17 ? 'Auditado Ok' : 'Pila Ok'}
+                            </span>
+                        </div>
+                    `;
+                }
+                binGrid.innerHTML = html;
+            }
+
+            // 2. Search Filter for Bins
+            const searchInput = document.getElementById('binSearch');
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    const val = e.target.value.toLowerCase().trim();
+                    const items = document.querySelectorAll('.bin-item');
+                    items.forEach(item => {
+                        const id = item.getAttribute('data-bin').toLowerCase();
+                        if (id.includes(val)) {
+                            item.style.display = 'flex';
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+                });
+            }
+
+            window.resetSearch = () => {
+                if (searchInput) {
+                    searchInput.value = '';
+                    const items = document.querySelectorAll('.bin-item');
+                    items.forEach(item => item.style.display = 'flex');
+                }
+            };
+
+            // 3. Render Minimalist Chart.js
+            const ctx = document.getElementById('cleanChart');
+            if (ctx) {
+                const labels = ['C01', 'C02', 'C03', 'C04', 'C05', 'C06', 'C07', 'C08', 'C09', 'C10', 'C11', 'C12*', 'C13*'];
+                const weights = [1214.5, 1239.0, 1206.0, 1214.0, 1216.5, 1261.0, 1236.0, 1206.0, 1233.0, 1249.5, 1236.0, 569.5, 814.5];
+
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: weights,
+                            backgroundColor: weights.map((w, idx) => {
+                                if (idx === 5) return '#c25832'; // Highlight Col 06 peak
+                                if (idx >= 11) return '#94a3b8'; // Partial stacks
+                                return '#28523b'; // Standard stacks
+                            }),
+                            borderRadius: 0,
+                            barThickness: 18,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                backgroundColor: '#1a1c18',
+                                titleFont: { family: 'JetBrains Mono', size: 11 },
+                                bodyFont: { family: 'JetBrains Mono', size: 11 },
+                                displayColors: false,
+                                callbacks: {
+                                    label: (ctx) => `Peso Neto: ${ctx.raw} kg`
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: { font: { family: 'JetBrains Mono', size: 10 }, color: '#55604c' }
+                            },
+                            y: {
+                                grid: { color: 'rgba(26, 28, 24, 0.08)' },
+                                ticks: { font: { family: 'JetBrains Mono', size: 10 }, color: '#55604c' }
+                            }
+                        }
+                    }
+                });
+            }
+
+        });
+    </script>
+</body>
+</html>
